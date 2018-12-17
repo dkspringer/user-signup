@@ -4,24 +4,42 @@ import re
 app = Flask(__name__)
 
 def check_password_match(password, verify):
-	if not password or not verify:
-		return 'You must submit a password'
+	"""
+	Verifies that the password and the verify password inputs match. Returns
+	either an error message if they do not match or a an empty string if they do
+	"""
+	if not verify:
+		return 'This field cannot be left blank'
 	if password != verify:
 		return 'Passwords do not match'
 	return ''
 
-def check_valid_username(username):
-	if len(username) < 3:
-		return 'Username may not be shorter 3 characters'
-	if len(username) > 20:
-		return 'Username may not be longer than 20 characters'
-	if ' ' in username:
-		return 'Username may not contain spaces'
+def check_valid(input, input_type):
+	"""
+	Used to check valid format for both username and password
+	"""
+	if not input:
+		return 'This field cannot be left blank'
+	if len(input) < 3:
+		return '{} may not be shorter 3 characters'.format(input_type)
+	if len(input) > 20:
+		return '{} may not be longer than 20 characters'.format(input_type)
+	if ' ' in input:
+		return '{} may not contain spaces'.format(input_type)
 	return ''
 
 def check_email(email):
+	"""
+	Checks that the e-mail, if given, conforms to a specified pattern.
+	Defines the pattern of a valid e-mail address by defining smaller parts of
+	an e-mail address and defining larger parts using those smaller parts. The
+	overall requirements are adapted from the Wikipedia page on email addresses:
+	https://en.wikipedia.org/wiki/Email_address#Syntax
+	"""
+
 	if not email:
 		return ''
+
 
 	special = "!#$%&'*+\-\/=?^_`{|}~" # special characters allowed
 	alpha = "a-zA-Z"
@@ -48,23 +66,18 @@ def index():
 		verify_password = request.form.get('verify')
 		email = request.form.get('email')
 
-		msg_user = check_valid_username(username)
-		msg_passwd = check_password_match(password, verify_password)
-		msg_email = check_email(email)
+		error_user = check_valid(username, 'Username')
+		error_password = check_valid(password, 'Password')
+		error_match = check_password_match(password, verify_password)
+		error_email = check_email(email)
 
-		if not (msg_user or msg_passwd or msg_email):
+		if not (error_user or error_password or error_match or error_email):
 			return render_template('welcome.html', name=username)
-		return redirect(url_for('index', msg_user=msg_user,
-						msg_passwd=msg_passwd, msg_email=msg_email))
+		return render_template('home.html', username=username, email=email, error_password=error_password,
+							   error_user=error_user, error_match=error_match, error_email=error_email)
 
 	else:
-		# Error messages
-		msg_user = request.args.get('msg_user')
-		msg_passwd = request.args.get('msg_passwd')
-		msg_email = request.args.get('msg_email')
-
-		return render_template('home.html', msg_user=msg_user,
-							   msg_passwd=msg_passwd, msg_email=msg_email)
+		return render_template('home.html')
 
 if __name__ == '__main__':
 	app.run()

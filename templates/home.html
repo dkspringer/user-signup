@@ -2,6 +2,11 @@
 <html>
 <head>
 	<title>Login</title>
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
 	<h1>Signup</h1>
@@ -9,19 +14,31 @@
 		<table>
 			<tr>
 				<td>Username</td>
-				<td><input type="text" name="username"></td>
+				<td>
+                    <input type="text" name="username" value="{{ username }}">
+                    <span class="error">{{ error_user }}</span>
+                </td>
 			</tr>
 			<tr>
 				<td>Password</td>
-				<td><input type="password" name="password"></td>
+				<td>
+                    <input type="password" name="password">
+                    <span class="error">{{ error_password }}</span>
+                </td>
 			</tr>
 			<tr>
 				<td>Verify Password</td>
-				<td><input type="password" name="verify"></td>
+				<td>
+                    <input type="password" name="verify">
+                    <span class="error">{{ error_match }}</span>
+                </td>
 			</tr>
 			<tr>
 				<td>Email (optional)</td>
-				<td><input type="text" name="email"</td>
+				<td>
+                    <input type="text" name="email" value="{{ email }}">
+                    <span class="error">{{ error_email }}</span>
+                </td>
 			</tr>
 		</table>
 		<input type="submit">
